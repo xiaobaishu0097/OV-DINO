@@ -332,8 +332,8 @@ If you find OV-DINO is helpful for your research or applications, please conside
 
 ```bibtex
 @article{wang2024ovdino,
-  title={OV-DINO: Unified Open-Vocabulary Detection with Language-Aware Selective Fusion}, 
-  author={Hao Wang and Pengzhen Ren and Zequn Jie and Xiao Dong and Chengjian Feng and Yinlong Qian and Lin Ma and Dongmei Jiang and Yaowei Wang and Xiangyuan Lan and Xiaodan Liang},
+  title={OV-DINO: Unified Open-Vocabulary Detection with Language-Aware Selective Fusion},
+  author={Wang, Hao and Ren, Pengzhen and Jie, Zequn and Dong, Xiao and Feng, Chengjian and Qian, Yinlong and Ma, Lin and Jiang, Dongmei and Wang, Yaowei and Lan, Xiangyuan and others},
   journal={arXiv preprint arXiv:2407.07844},
   year={2024}
 }

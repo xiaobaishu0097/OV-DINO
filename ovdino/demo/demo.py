@@ -1,6 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import argparse
 import glob
+import json
 import multiprocessing as mp
 import os
 import sys
@@ -17,6 +18,7 @@ from demo.predictors import OVDINODemo
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import LazyConfig, instantiate
 from detectron2.data.detection_utils import read_image
+from detectron2.evaluation.coco_evaluation import instances_to_coco_json
 from detectron2.utils.logger import setup_logger
 from detrex.data.datasets import clean_words_or_phrase
 
@@ -178,7 +180,8 @@ if __name__ == "__main__":
             assert args.input, "The input path(s) was not found"
         if os.path.isdir(args.input[0]):
             args.input = [
-                os.path.join(args.input[0], file) for file in os.listdir(args.input[0])
+                os.path.join(args.input[0], file)
+                for file in sorted(os.listdir(args.input[0]))
             ]
             os.makedirs(args.output, exist_ok=True)
         for path in tqdm.tqdm(args.input, disable=not args.output):
@@ -188,6 +191,15 @@ if __name__ == "__main__":
             predictions, visualized_output = demo.run_on_image(
                 img, category_names, args.confidence_threshold
             )
+            json_results = instances_to_coco_json(
+                predictions["instances"].to(demo.cpu_device), 0
+            )
+            for json_result in json_results:
+                json_result["category_name"] = category_names[
+                    json_result["category_id"]
+                ]
+                del json_result["image_id"]
+
             logger.info(
                 "{}: {} in {:.2f}s".format(
                     path,
@@ -210,6 +222,10 @@ if __name__ == "__main__":
                     ), "Please specify a directory with args.output"
                     out_filename = args.output
                 visualized_output.save(out_filename)
+                with open(
+                    out_filename.replace(".jpg", ".json").replace(".png", ".json"), "w"
+                ) as f:
+                    json.dump(json_results, f)
             else:
                 cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
                 cv2.imshow(WINDOW_NAME, visualized_output.get_image()[:, :, ::-1])
@@ -269,6 +285,4 @@ if __name__ == "__main__":
         if args.output:
             output_file.release()
         else:
-            cv2.destroyAllWindows()
-            cv2.destroyAllWindows()
             cv2.destroyAllWindows()

@@ -6,8 +6,12 @@ from copy import copy
 import detectron2.data.transforms as T
 import numpy as np
 import torch
+from addict import Dict
 from detectron2.data import MetadataCatalog
+from detectron2.data.datasets.builtin_meta import COCO_CATEGORIES
 from detectron2.utils.visualizer import ColorMode, Visualizer
+
+coco_colors = [c["color"] for c in COCO_CATEGORIES]
 
 
 def filter_predictions_with_confidence(predictions, confidence_threshold=0.5):
@@ -28,20 +32,17 @@ class OVDINODemo(object):
         max_size_test=1333,
         img_format="RGB",
         metadata_dataset="coco_2017_val",
-        instance_mode=ColorMode.IMAGE,
         parallel=False,
     ):
         """
         Args:
             cfg (CfgNode):
-            instance_mode (ColorMode):
             parallel (bool): whether to run the model in different processes from visualization.
                 Useful since the visualization logic can be slow.
         """
         self.metadata = {}
 
         self.cpu_device = torch.device("cpu")
-        self.instance_mode = instance_mode
         self.sam_predictor = sam_predictor
 
         self.parallel = parallel
@@ -86,7 +87,7 @@ class OVDINODemo(object):
         return instances
 
     def run_on_image(
-        self, image, category_names, threshold=0.5, with_segmentation=False
+        self, image, category_names, threshold=0.5, with_segmentation=True
     ):
         """
         Args:
@@ -102,8 +103,26 @@ class OVDINODemo(object):
         predictions = filter_predictions_with_confidence(predictions, threshold)
         # Convert image from OpenCV BGR format to Matplotlib RGB format.
         image = image[:, :, ::-1]
-        metadata = {"thing_classes": category_names}
-        visualizer = Visualizer(image, metadata, instance_mode=self.instance_mode)
+
+        # predefine the thing_colors for segmentation
+        num_classes = len(category_names)
+        if num_classes > len(coco_colors):
+            thing_colors = (
+                coco_colors + coco_colors[: len(category_names) - len(coco_colors)]
+            )
+        else:
+            # thing_colors = random.sample(coco_colors, num_classes)
+            thing_colors = coco_colors[:num_classes]
+        metadata = Dict(
+            {
+                "thing_classes": category_names,
+                "thing_colors": thing_colors,
+            }
+        )
+        instance_mode = (
+            ColorMode.IMAGE if not with_segmentation else ColorMode.SEGMENTATION
+        )
+        visualizer = Visualizer(image, metadata, instance_mode=instance_mode)
         if "panoptic_seg" in predictions:
             panoptic_seg, segments_info = predictions["panoptic_seg"]
             vis_output = visualizer.draw_panoptic_seg_predictions(
@@ -172,6 +191,8 @@ class DefaultPredictor:
                 "category_names": category_names,
             }
             predictions = self.model([inputs])[0]
+            # clear cuda memory
+            torch.cuda.empty_cache()
             return predictions
 
 

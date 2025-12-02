@@ -1,0 +1,44 @@
+  error: subprocess-exited-with-error
+  
+  × python setup.py egg_info did not run successfully.
+  │ exit code: 1
+  ╰─> [21 lines of output]
+      /tmp/pip-install-pttpwkbe/mmcv_946f1e0b90814e959fa6ab08c467a57d/setup.py:5: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+        from pkg_resources import DistributionNotFound, get_distribution, parse_version
+      Traceback (most recent call last):
+        File "<string>", line 2, in <module>
+          exec(compile('''
+          ~~~~^^^^^^^^^^^^
+          # This is <pip-setuptools-caller> -- a caller that pip uses to run setup.py
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          ...<32 lines>...
+          exec(compile(setup_py_code, filename, "exec"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          ''' % ('/tmp/pip-install-pttpwkbe/mmcv_946f1e0b90814e959fa6ab08c467a57d/setup.py',), "<pip-setuptools-caller>", "exec"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<pip-setuptools-caller>", line 35, in <module>
+        File "/tmp/pip-install-pttpwkbe/mmcv_946f1e0b90814e959fa6ab08c467a57d/setup.py", line 462, in <module>
+          version=get_version(),
+                  ~~~~~~~~~~~^^
+        File "/tmp/pip-install-pttpwkbe/mmcv_946f1e0b90814e959fa6ab08c467a57d/setup.py", line 43, in get_version
+          return locals()['__version__']
+                 ~~~~~~~~^^^^^^^^^^^^^^^
+      KeyError: '__version__'
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: metadata-generation-failed
+
+× Encountered error while generating package metadata.
+╰─> See above for output.
+
+note: This is an issue with the package mentioned above, not pip.
+hint: See above for details.
+
+ERROR conda.cli.main_run:execute(125): `conda run pip install mmcv mmdet mmengine` failed. (See above for error)
+Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/cpu
+Collecting mmcv
+  Using cached mmcv-2.2.0.tar.gz (479 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'error'
+

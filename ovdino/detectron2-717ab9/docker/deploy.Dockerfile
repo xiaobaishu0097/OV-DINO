@@ -6,8 +6,9 @@
 FROM detectron2:v0
 
 USER appuser
-ENV HOME=/home/appuser
-WORKDIR $HOME
+ARG USER_HOME=/workspace
+ENV HOME=${USER_HOME}
+WORKDIR ${HOME}
 
 # Let torchvision find libtorch
 ENV CMAKE_PREFIX_PATH=$HOME/.local/lib/python3.6/site-packages/torch/

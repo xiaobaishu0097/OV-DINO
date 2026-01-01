@@ -8,12 +8,14 @@ RUN ln -sv /usr/bin/python3 /usr/bin/python
 
 # create a non-root user
 ARG USER_ID=1000
-RUN useradd -m --no-log-init --system  --uid ${USER_ID} appuser -g sudo
+ARG USER_HOME=/workspace
+RUN useradd -m --no-log-init --system --uid ${USER_ID} --home-dir ${USER_HOME} appuser -g sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER appuser
-WORKDIR /home/appuser
+ENV HOME=${USER_HOME}
+WORKDIR ${HOME}
 
-ENV PATH="/home/appuser/.local/bin:${PATH}"
+ENV PATH="${HOME}/.local/bin:${PATH}"
 RUN wget https://bootstrap.pypa.io/pip/3.6/get-pip.py && \
 	python3 get-pip.py --user && \
 	rm get-pip.py
@@ -37,7 +39,7 @@ RUN pip install --user -e detectron2_repo
 
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"
-WORKDIR /home/appuser/detectron2_repo
+WORKDIR ${HOME}/detectron2_repo
 
 # run detectron2 under user "appuser":
 # wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
